@@ -9,11 +9,12 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+This project uses the VGA plaground template to output a vga signal of a moving logo from
+a bit map
 
 ## How to test
 
-Explain how to use your project
+Testing is through the cocotb python testing file
 
 ## External hardware
 

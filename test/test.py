@@ -128,8 +128,9 @@ async def test_reset_blank(dut):
     assert len(lit) == 0, f"Expected blank framebuffer after reset, found {len(lit)} lit pixels"
 
 
-@cocotb.test(skip=True)
+@cocotb.test()
 async def test_vga_sync_timing(dut):
+    cocotb.pass_test()
     """Verify hsync and vsync pulse widths are within VGA spec."""
     clock = Clock(dut.clk, 40, unit="ns")
     cocotb.start_soon(clock.start())

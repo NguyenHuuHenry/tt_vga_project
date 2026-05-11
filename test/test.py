@@ -108,7 +108,7 @@ def bezier_reference(p0, p1, p2, steps=129):
         s = 1.0 - t
         x = s*s*p0[0] + 2*s*t*p1[0] + t*t*p2[0]
         y = s*s*p0[1] + 2*s*t*p1[1] + t*t*p2[1]
-        xi, yi = int(round(x)), int(round(y))
+        xi, yi = int(x), int(y)  # truncation matches hardware's d0>>14 shift
         if 0 <= xi < 160 and 0 <= yi < 120:
             pixels.add((xi, yi))
     return pixels
@@ -135,11 +135,11 @@ async def test_vga_sync_timing(dut):
     cocotb.start_soon(clock.start())
     await reset(dut)
 
-    # Wait for vsync rising edge (end of sync pulse)
+    # Wait for vsync rising edge (end of sync pulse = start of back porch)
     while not (int(dut.uo_out.value) & 0x08):
         await ClockCycles(dut.clk, 1)
-    # Skip one full frame of display+front porch to reach the next vsync pulse
-    await ClockCycles(dut.clk, H_TOTAL * (V_DISPLAY + V_FRONT))
+    # From start of back porch, skip back porch + display + front porch to reach next sync pulse
+    await ClockCycles(dut.clk, H_TOTAL * (V_BACK + V_DISPLAY + V_FRONT))
 
     vsync = (int(dut.uo_out.value) >> 3) & 1
     assert vsync == 0, "Expected vsync low (active) at start of sync pulse"
